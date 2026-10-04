@@ -1,0 +1,1 @@
+{"dependentSchemas":{"a":false},"dependentRequired":{"a":["b"]},"propertyNames":{"pattern":"^[a-z]+$"},"patternProperties":{"^x":true},"unevaluatedProperties":false}

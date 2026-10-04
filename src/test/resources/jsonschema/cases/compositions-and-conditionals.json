@@ -1,0 +1,1 @@
+{"allOf":[true,{}],"anyOf":[false,{"type":"integer"}],"oneOf":[{"const":1},{"const":2}],"not":false,"if":true,"then":{},"else":false}

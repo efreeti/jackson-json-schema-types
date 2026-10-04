@@ -1,0 +1,1 @@
+{"$id":"https://example.test/schema","$schema":"https://json-schema.org/draft/2020-12/schema","$comment":"comment","$vocabulary":{"https://example.test/vocab":true},"$anchor":"a","$dynamicAnchor":"node","$dynamicRef":"#node","title":"title","description":"description","deprecated":false,"readOnly":true,"writeOnly":false}
