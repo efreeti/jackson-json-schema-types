@@ -1,0 +1,105 @@
+name: Release to Maven Central
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version (for example 0.1.0)'
+        required: true
+        type: string
+      development_version:
+        description: 'Next development version (for example 0.2.0-SNAPSHOT)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: maven-central-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      RELEASE_VERSION: ${{ inputs.release_version }}
+      DEVELOPMENT_VERSION: ${{ inputs.development_version }}
+      CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+      CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+      MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      RELEASE_GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN || github.token }}
+    steps:
+      - name: Validate release inputs and configuration
+        env:
+          DISPATCH_REF: ${{ github.ref }}
+          SIGNING_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          [[ "$DISPATCH_REF" == refs/heads/main ]] || {
+            echo 'Run this workflow from main.' >&2; exit 1;
+          }
+          [[ "$RELEASE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || {
+            echo 'Release version must use major.minor.patch.' >&2; exit 1;
+          }
+          [[ "$DEVELOPMENT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+-SNAPSHOT$ ]] || {
+            echo 'Development version must use major.minor.patch-SNAPSHOT.' >&2; exit 1;
+          }
+          [[ "${DEVELOPMENT_VERSION%-SNAPSHOT}" != "$RELEASE_VERSION" ]] || {
+            echo 'Choose a different next development version.' >&2; exit 1;
+          }
+          for variable in CENTRAL_USERNAME CENTRAL_PASSWORD SIGNING_KEY MAVEN_GPG_PASSPHRASE; do
+            [[ -n "${!variable}" ]] || { echo "Missing secret: $variable" >&2; exit 1; }
+          done
+
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_GITHUB_TOKEN || github.token }}
+
+      - name: Configure Git for Maven's release checkout
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          # release:perform clones a new checkout, so authentication must also work there.
+          git config --global credential.https://github.com.helper \
+            '!f() { if [ "$1" = get ]; then printf "%s\n" "username=x-access-token" "password=$RELEASE_GITHUB_TOKEN"; fi; }; f'
+          if git rev-parse --verify --quiet "refs/tags/v$RELEASE_VERSION" >/dev/null; then
+            echo "Tag v$RELEASE_VERSION already exists. See docs/publishing.md for recovery." >&2
+            exit 1
+          fi
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          server-id: central
+          server-username: CENTRAL_USERNAME
+          server-password: CENTRAL_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - name: Prepare release commit, tag and next development version
+        run: |
+          mvn --batch-mode --no-transfer-progress release:prepare \
+            -DreleaseVersion="$RELEASE_VERSION" \
+            -DdevelopmentVersion="$DEVELOPMENT_VERSION" \
+            -Dtag="v$RELEASE_VERSION" \
+            -Dresume=false
+
+      - name: Build the tag, sign and publish to Maven Central
+        run: mvn --batch-mode --no-transfer-progress release:perform
+
+      - name: Retain artifacts and release metadata
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ inputs.release_version }}
+          if-no-files-found: ignore
+          path: |
+            release.properties
+            target/checkout/target/*.jar
+            target/checkout/target/*.asc
