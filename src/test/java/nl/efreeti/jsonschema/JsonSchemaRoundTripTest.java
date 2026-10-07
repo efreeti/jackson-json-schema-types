@@ -107,7 +107,7 @@ class JsonSchemaRoundTripTest {
                 "{\"@type\":\"data\",\"nested\":[null,true,1]}"
         )
                 .stream()
-                .map(json -> DynamicTest.dynamicTest( json, () -> {
+                .map(json -> DynamicTest.dynamicTest(json, () -> {
                     var value = mapper.readValue(json, JsonValue.class);
                     var serialized = mapper.writerFor(JsonValue.class).writeValueAsString(value);
                     assertEquals(mapper.readValue(json, Object.class), mapper.readValue(serialized, Object.class));
