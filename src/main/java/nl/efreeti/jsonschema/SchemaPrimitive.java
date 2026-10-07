@@ -2,9 +2,7 @@ package nl.efreeti.jsonschema;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * Primitive names defined by JSON Schema.
- */
+/** Primitive names defined by JSON Schema. */
 public enum SchemaPrimitive {
     @JsonProperty("null")
     NULL,

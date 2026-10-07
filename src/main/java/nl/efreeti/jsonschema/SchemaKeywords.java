@@ -3,7 +3,6 @@ package nl.efreeti.jsonschema;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
@@ -79,9 +78,7 @@ public record SchemaKeywords(
         Optional<List<String>> required,
         Optional<Map<String, List<String>>> dependentRequired,
         @JsonAnyGetter Map<String, JsonValue> extensions) {
-    /**
-     * Creates a keyword object with immutable collection contents.
-     */
+    /** Creates a keyword object with immutable collection contents. */
     public SchemaKeywords {
         enumValues = enumValues.map(List::copyOf);
         examples = examples.map(List::copyOf);

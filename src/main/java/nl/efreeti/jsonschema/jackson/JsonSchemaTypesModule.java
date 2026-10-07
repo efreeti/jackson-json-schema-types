@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import nl.efreeti.jsonschema.JsonSchema;
 import nl.efreeti.jsonschema.JsonValue;
 import nl.efreeti.jsonschema.SchemaKeywords;
@@ -25,13 +24,7 @@ import tools.jackson.databind.jsontype.TypeDeserializer;
 import tools.jackson.databind.jsontype.TypeSerializer;
 import tools.jackson.databind.module.SimpleModule;
 
-/**
- * Maps the project's tagged Java unions to native JSON Schema wire shapes.
- */
 public final class JsonSchemaTypesModule extends SimpleModule {
-    /**
-     * Registers native schema, type declaration, and JSON value codecs.
-     */
     public JsonSchemaTypesModule() {
         super("JsonSchemaTypesModule");
         addSerializer(JsonSchema.class, new SchemaSerializer());

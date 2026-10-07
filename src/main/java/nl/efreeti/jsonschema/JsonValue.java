@@ -3,14 +3,11 @@ package nl.efreeti.jsonschema;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Arbitrary JSON data, including explicit JSON null, without untyped payloads.
- */
+/** Arbitrary JSON data, including explicit JSON null, without untyped payloads. */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME)
 @JsonSubTypes({
         @JsonSubTypes.Type(JsonValue.NullValue.class),
@@ -21,37 +18,27 @@ import java.util.Map;
         @JsonSubTypes.Type(JsonValue.ObjectValue.class)
 })
 public sealed interface JsonValue {
-    /**
-     * Explicit JSON null, distinct from an absent schema keyword.
-     */
+    /** Explicit JSON null, distinct from an absent schema keyword. */
     @JsonTypeName("NullValue")
     record NullValue() implements JsonValue {
     }
 
-    /**
-     * A JSON boolean.
-     */
+    /** A JSON boolean. */
     @JsonTypeName("BooleanValue")
     record BooleanValue(boolean value) implements JsonValue {
     }
 
-    /**
-     * A JSON number represented without floating point precision loss.
-     */
+    /** A JSON number represented without floating point precision loss. */
     @JsonTypeName("NumberValue")
     record NumberValue(BigDecimal value) implements JsonValue {
     }
 
-    /**
-     * A JSON string.
-     */
+    /** A JSON string. */
     @JsonTypeName("StringValue")
     record StringValue(String value) implements JsonValue {
     }
 
-    /**
-     * An ordered collection of JSON values.
-     */
+    /** An ordered collection of JSON values. */
     @JsonTypeName("ArrayValue")
     record ArrayValue(List<JsonValue> values) implements JsonValue {
         public ArrayValue {
@@ -59,9 +46,7 @@ public sealed interface JsonValue {
         }
     }
 
-    /**
-     * A JSON object with string keys and typed JSON values.
-     */
+    /** A JSON object with string keys and typed JSON values. */
     @JsonTypeName("ObjectValue")
     record ObjectValue(Map<String, JsonValue> values) implements JsonValue {
         public ObjectValue {

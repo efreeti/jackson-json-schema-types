@@ -12,7 +12,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.stream.Stream;
-
 import nl.efreeti.jsonschema.jackson.JsonSchemaTypesModule;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
