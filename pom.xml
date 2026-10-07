@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>nl.efreeti</groupId>
     <artifactId>jackson-json-schema-types</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0-SNAPSHOT</version>
     <name>Jackson JSON Schema Types</name>
     <description>Typed Java models for JSON Schema draft 2020-12 with native Jackson 3 codecs.</description>
     <url>https://github.com/efreeti/jackson-json-schema-types</url>
@@ -25,7 +25,7 @@
         <connection>scm:git:https://github.com/efreeti/jackson-json-schema-types.git</connection>
         <developerConnection>scm:git:https://github.com/efreeti/jackson-json-schema-types.git</developerConnection>
         <url>https://github.com/efreeti/jackson-json-schema-types</url>
-        <tag>v1.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
     <properties>
         <maven.compiler.release>21</maven.compiler.release>
