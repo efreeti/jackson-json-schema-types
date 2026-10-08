@@ -83,16 +83,19 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
+      - name: Show pinned Maven version
+        run: ./mvnw --version
+
       - name: Prepare release commit, tag and next development version
         run: |
-          mvn --batch-mode --no-transfer-progress release:prepare \
+          ./mvnw --batch-mode --no-transfer-progress release:prepare \
             -DreleaseVersion="$RELEASE_VERSION" \
             -DdevelopmentVersion="$DEVELOPMENT_VERSION" \
             -Dtag="v$RELEASE_VERSION" \
             -Dresume=false
 
       - name: Build the tag, sign and publish to Maven Central
-        run: mvn --batch-mode --no-transfer-progress release:perform
+        run: ./mvnw --batch-mode --no-transfer-progress release:perform
 
       - name: Retain artifacts and release metadata
         if: always()
@@ -104,3 +107,5 @@ jobs:
             release.properties
             target/checkout/target/*.jar
             target/checkout/target/*.asc
+            target/checkout/target/central-publishing/**
+            target/checkout/target/central-staging/**
